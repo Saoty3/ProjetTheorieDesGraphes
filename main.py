@@ -1,4 +1,3 @@
-import pandas as pd
 from Function import *
 
 cst =0
@@ -19,10 +18,10 @@ while cst == 0:
     try:
         matrice = txt_to_matrice(num)
     except FileNotFoundError:
-        print("Erreur : fichier introuvable")
+        print("Erreur : Le fichier introuvable")
         continue
     except PermissionError:
-        print("Erreur : accès refusé")
+        print("Erreur : Accès refusé")
         continue
 
     df = pd.DataFrame(matrice)
@@ -37,9 +36,8 @@ while cst == 0:
     print("\nMatrice amélioré : \n",new_df)
 
     #Vérification si l'utilisateur veut quitter le programme après le calcul matriciel
-    cont = "v"
     cont = input("Voulez-vous continuer ? (y/n)\n")
     while cont != "y" and cont != "n":
-        cont = input("Vous vous êtes trompé.\nVoulez-vous continuer ? (y/n)\n")
+        cont = input("Vous vous êtes trompé de réponse.\nVoulez-vous continuer ? (y/n)\n")
     if cont == "n":
         cst = 1
