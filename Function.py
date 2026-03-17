@@ -15,6 +15,7 @@ def txt_to_matrice(num):
             u,v,w = map(int, lines.split())
             matrice[u][v] = w
 
+
     return matrice
 
 def floyd_warshall(dist):
@@ -32,3 +33,18 @@ def floyd_warshall(dist):
         print(f"\nMatrice L pour k = {k}")
         print(pd.DataFrame(dist))
     return P, dist
+
+def accessible(matrice, start):
+    n = len(matrice)
+    visited = set()
+    stack = [start]
+
+    while stack:
+        u = stack.pop()
+        if u not in visited:
+            visited.add(u)
+            for v in range (n):
+                if matrice[u][v] != 'inf':
+                    stack.append(v)
+    return visited
+
