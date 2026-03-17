@@ -35,6 +35,8 @@ while cst == 0:
     new_df = pd.DataFrame(matrice)
     print("\nMatrice amélioré : \n",new_df)
 
+    detect_cycle(matrice)
+
     #Vérification si l'utilisateur veut quitter le programme après le calcul matriciel
     cont = input("Voulez-vous continuer ? (y/n)\n")
     while cont != "y" and cont != "n":
