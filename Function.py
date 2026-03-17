@@ -1,3 +1,6 @@
+import pandas as pd
+
+
 def txt_to_matrice(num):
     with open (f"Graphe{num}.txt","r") as f:
         # Récolte des premières informations sur la matrice
@@ -17,10 +20,15 @@ def txt_to_matrice(num):
 def floyd_warshall(dist):
     n = len(dist)
 
+    P = [[None for j in range(n)]for i in range(n)]
+
     for k in range(n):
         for i in range(n):
             for j in range(n):
                 if dist[i][j] > dist[i][k] + dist[k][j]:
                     dist[i][j] = dist[i][k] + dist[k][j]
 
-    return dist
+                    P[i][j] = k
+        print(f"\nMatrice L pour k = {k}")
+        print(pd.DataFrame(dist))
+    return P, dist
