@@ -1,45 +1,98 @@
-from Function import *
+from Function import (
+    lire_graphe,
+    floyd_warshall,
+    contient_circuit_absorbant,
+    reconstruire_chemin,
+    afficher_matrice,
+    afficher_matrice_predecesseurs,
+    afficher_tous_les_chemins,
+)
 
-cst =0
-while cst == 0:
-    #Séléction du graphe parmi les 13 proposés
-    num =None
-    while num is None:
+NB_GRAPHES = 13
+
+
+def traiter_graphe(num):
+    print("\n" + "=" * 60)
+    print(f"Analyse du graphe {num}")
+    print("=" * 60)
+
+    matrice = lire_graphe(num)
+    afficher_matrice(matrice, "Matrice initiale")
+
+    dist, pred, historiques_L, historiques_P = floyd_warshall(matrice)
+
+    for k in range(len(historiques_L)):
+        afficher_matrice(historiques_L[k], f"Matrice L après k = {k}")
+        afficher_matrice_predecesseurs(historiques_P[k], f"Matrice P après k = {k}")
+
+    afficher_matrice(dist, "Matrice finale des distances minimales")
+    afficher_matrice_predecesseurs(pred, "Matrice finale P")
+
+    if contient_circuit_absorbant(dist):
+        print("\nLe graphe contient au moins un circuit absorbant.")
+        print("Dans ce cas, certains plus courts chemins ne sont pas définis.")
+        return
+
+    print("\nLe graphe ne contient pas de circuit absorbant.")
+
+    while True:
+        choix = input("\nVoulez-vous afficher un chemin minimal précis ? (o/n) : ").strip().lower()
+        if choix == "n":
+            break
+        if choix != "o":
+            print("Réponse invalide.")
+            continue
+
         try:
-            temp = int(input("Quelle graphe entre 1 et 13 voulez vous analyser ?\n"))
-            if 1<= temp <= 13:
-                num = temp
-            else:
-                print("Ce graphe n'existe pas\n")
+            depart = int(input("Sommet de départ : "))
+            arrivee = int(input("Sommet d'arrivée : "))
         except ValueError:
-            print("Erreur : Veuillez entrer un nombre valide\n")
+            print("Veuillez entrer des entiers.")
+            continue
 
-    #Passage du graphe sous forme txt à la forme matriciel
-    try:
-        matrice = txt_to_matrice(num)
-    except FileNotFoundError:
-        print("Erreur : Le fichier introuvable")
-        continue
-    except PermissionError:
-        print("Erreur : Accès refusé")
-        continue
+        if not (0 <= depart < len(dist) and 0 <= arrivee < len(dist)):
+            print("Sommet invalide.")
+            continue
 
-    df = pd.DataFrame(matrice)
-    print("Matrice initial : \n",df)
+        chemin = reconstruire_chemin(pred, depart, arrivee)
+        if chemin is None or dist[depart][arrivee] == float("inf"):
+            print(f"Aucun chemin de {depart} à {arrivee}.")
+        else:
+            print(
+                f"Chemin minimal de {depart} à {arrivee} : "
+                + " -> ".join(map(str, chemin))
+            )
+            print(f"Coût minimal : {dist[depart][arrivee]}")
 
-    #Application de l'algorithme de floyd-warshall
-    P, matrice = floyd_warshall(matrice)
-    #Calcul de la matrice P représentant les sommets amélioré par l'algorithme
-    df = pd.DataFrame(P)
-    print("Matrice P des sommet qui sont modifiés\n", df)
-    new_df = pd.DataFrame(matrice)
-    print("\nMatrice amélioré : \n",new_df)
+    choix_tous = input("\nVoulez-vous afficher tous les chemins minimaux ? (o/n) : ").strip().lower()
+    if choix_tous == "o":
+        afficher_tous_les_chemins(dist, pred)
 
-    detect_cycle(matrice)
 
-    #Vérification si l'utilisateur veut quitter le programme après le calcul matriciel
-    cont = input("Voulez-vous continuer ? (y/n)\n")
-    while cont != "y" and cont != "n":
-        cont = input("Vous vous êtes trompé de réponse.\nVoulez-vous continuer ? (y/n)\n")
-    if cont == "n":
-        cst = 1
+def main():
+    while True:
+        try:
+            num = int(input(f"\nQuel graphe entre 1 et {NB_GRAPHES} voulez-vous analyser ? "))
+        except ValueError:
+            print("Veuillez entrer un entier.")
+            continue
+
+        if not (1 <= num <= NB_GRAPHES):
+            print(f"Ce graphe n'existe pas. Choisissez un nombre entre 1 et {NB_GRAPHES}.")
+            continue
+
+        try:
+            traiter_graphe(num)
+        except FileNotFoundError as e:
+            print(e)
+        except Exception as e:
+            print(f"Erreur pendant le traitement du graphe {num} : {e}")
+
+        recommencer = input("\nVoulez-vous analyser un autre graphe ? (o/n) : ").strip().lower()
+        if recommencer != "o":
+            print("Fin du programme.")
+            break
+
+
+if __name__ == "__main__":
+    main()
