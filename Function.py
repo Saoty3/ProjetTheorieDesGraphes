@@ -26,7 +26,7 @@ def afficher_matrice(matrice, nom="Matrice"):
 
 
 def lire_graphe(num):
-    chemin = Path(__file__).resolve().parent / f"Graphe{num}.txt"
+    chemin = Path(__file__).resolve().parent / f"Graphe_{num}.txt"
 
     if not chemin.exists():
         raise FileNotFoundError(f"Fichier introuvable : {chemin}")
