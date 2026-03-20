@@ -8,7 +8,7 @@ from Function import (
     afficher_tous_les_chemins,
 )
 
-NB_GRAPHES = 13
+NB_GRAPHES = 14
 
 
 def traiter_graphe(num):
